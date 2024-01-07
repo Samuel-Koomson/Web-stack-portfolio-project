@@ -100,6 +100,9 @@
 
     //Attach the generatePassword function to the button click event
     document.getElementById('generatePasswordBtn').addEventListener('click', generatePassword);
+</script>
+
+    <script>
 
       function viewPasswords() {
         // Make an AJAX request to the server to fetch and display passwords
@@ -139,5 +142,48 @@
     // Attach the functions to the corresponding button click events
     document.getElementById('viewPasswordsBtn').addEventListener('click', viewPasswords);
     document.getElementById('searchPasswordBtn').addEventListener('click', searchPassword);
-</script>
+    </script>
 
+<script>
+
+    function deletePassword() {
+        // Get the website to delete
+        const website = document.getElementById('deleteWebsite').value;
+
+        // Make an AJAX request to the server to delete the password
+        fetch('/delete_password', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `website=${website}`,
+        })
+            .then(response => response.json())
+            .then(result => {
+                // Display the result on the client side
+                alert(JSON.stringify(result, null, 2));
+            })
+            .catch(error => {
+                console.error('Error deleting password:', error);
+            });
+    }
+
+    function deleteAllPasswords() {
+        // Make an AJAX request to the server to delete all passwords
+        fetch('/delete_all_passwords', {
+            method: 'POST',
+        })
+            .then(response => response.json())
+            .then(result => {
+                // Display the result on the client side
+                alert(JSON.stringify(result, null, 2));
+            })
+            .catch(error => {
+                console.error('Error deleting all passwords:', error);
+            });
+    }
+
+    // Attach the functions to the corresponding button click events
+    document.getElementById('deletePasswordBtn').addEventListener('click', deletePassword);
+    document.getElementById('deleteAllPasswordsBtn').addEventListener('click', deleteAllPasswords);
+</script>

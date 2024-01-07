@@ -86,5 +86,25 @@ def search_password():
         else:
             return jsonify({'error': f'No password found for {website}'})
 
+@app.route('/delete_password', methods=['POST'])
+def delete_password():
+    website = request.form.get('website')
+    with open("password_data.json", 'r') as pass_data:
+        data = json.load(pass_data)
+        if website in data:
+            del data[website]
+            with open("password_data.json", 'w') as pass_data:
+                json.dump(data, pass_data, indent=4)
+            return jsonify({'message': f'Password for {website} deleted successfully'})
+        else:
+            return jsonify({'error': f'No password found for {website}'})
+
+@app.route('/delete_all_passwords', methods=['POST'])
+def delete_all_passwords():
+    with open("password_data.json", 'w') as pass_data:
+        json.dump({}, pass_data)
+    return jsonify({'message': 'All passwords deleted successfully'})
+
+
 if __name__ == '__main__':
     app.run(debug=True)
