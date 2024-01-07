@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Manager</title>
+    <!-- Include Bootstrap CSS (you might need to adjust the path) -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="mb-4">Password Manager</h2>
+        <form id="passwordForm">
+            <div class="form-group">
+                <label for="website">Website:</label>
+                <input type="text" class="form-control" id="website" name="website" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email/Username:</label>
+                <input type="text" class="form-control" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="text" class="form-control" id="password" name="password" required>
+            </div>
+            <button type="button" class="btn btn-primary" onclick="generatePassword()">Generate Password</button>
+            <button type="submit" class="btn btn-success">Save Data</button>
+        </form>
+    </div>
+
+    <!-- Bootstrap for styling -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- javascript code to implement the generate password -->
+
+<script>
+    function generatePassword() {
+        // Define character sets
+        var letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        var numbers = '0123456789';
+        var symbols = '!#$%&()*+';
+
+        // Define password length and composition
+        var nr_letters = getRandomInt(8, 10);
+        var nr_symbols = getRandomInt(2, 4);
+        var nr_numbers = getRandomInt(2, 4);
+
+        // Generate password components
+        var passLetters = generateRandomChars(letters, nr_letters);
+        var passSymbols = generateRandomChars(symbols, nr_symbols);
+        var passNumbers = generateRandomChars(numbers, nr_numbers);
+
+        // Combine and shuffle password components
+        var passwordList = passLetters.concat(passSymbols, passNumbers);
+        shuffleArray(passwordList);
+
+        // Convert the array to a string
+        var password = passwordList.join('');
+
+        // Display the generated password in the password input field
+        document.getElementById('password').value = password;
+
+        // Copy the password to the clipboard
+        copyToClipboard(password);
+    }
+
+    // Helper function to generate an array of random characters from a given set
+    function generateRandomChars(charSet, count) {
+        return Array.from({ length: count }, function () {
+            return charSet.charAt(Math.floor(Math.random() * charSet.length));
+        });
+    }
+
+    // Helper function to shuffle an array
+    function shuffleArray(array) {
+        for (var i = array.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var temp = array[i];
+            array[i] = array[j];
+            array[j] = temp;
+        }
+    }
+
+    // Helper function to copy a string to the clipboard
+    function copyToClipboard(text) {
+        var textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+    }
+
+    // Helper function to get a random integer in a range
+    function getRandomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    //Attach the generatePassword function to the button click event
+    document.getElementById('generatePasswordBtn').addEventListener('click', generatePassword);
+
+      function viewPasswords() {
+        // Make an AJAX request to the server to fetch and display passwords
+        fetch('/view_passwords')
+            .then(response => response.json())
+            .then(passwords => {
+                // Display passwords on the client side
+                alert(JSON.stringify(passwords, null, 2));
+            })
+            .catch(error => {
+                console.error('Error fetching passwords:', error);
+            });
+    }
+
+    function searchPassword() {
+        // Get the website to search for
+        const website = document.getElementById('searchWebsite').value;
+
+        // Make an AJAX request to the server to search for the password
+        fetch('/search_password', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `website=${website}`,
+        })
+            .then(response => response.json())
+            .then(result => {
+                // Display the search result on the client side
+                alert(JSON.stringify(result, null, 2));
+            })
+            .catch(error => {
+                console.error('Error searching for password:', error);
+            });
+    }
+
+    // Attach the functions to the corresponding button click events
+    document.getElementById('viewPasswordsBtn').addEventListener('click', viewPasswords);
+    document.getElementById('searchPasswordBtn').addEventListener('click', searchPassword);
+</script>
+
